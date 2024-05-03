@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
 namespace YourWatch.Admin.Mobile.ViewModels;
 
@@ -63,9 +64,8 @@ public class EventDetailViewModel : INotifyPropertyChanged
         get => _eventStatus;
         set
         {
-            if (value == _eventStatus) return;
-            _eventStatus = value;
-            OnPropertyChanged();
+            SetField(ref _eventStatus, value);
+            ((Command)CancelEventCommand).ChangeCanExecute();
         }
     }
 
@@ -74,9 +74,8 @@ public class EventDetailViewModel : INotifyPropertyChanged
         get => _date;
         set
         {
-            if (value.Equals(_date)) return;
-            _date = value;
-            OnPropertyChanged();
+            SetField(ref _date, value);
+            ((Command)CancelEventCommand).ChangeCanExecute();
         }
     }
 
@@ -125,8 +124,20 @@ public class EventDetailViewModel : INotifyPropertyChanged
 
     public bool ShowThumbnailImage => !ShowLargerImage;
 
+    public ICommand CancelEventCommand
+    {
+        get;
+    }
+
+    private void CancelEvent() => EventStatus = EventStatusEnum.Cancelled;
+
+    private bool CanCancelEvent() => EventStatus != EventStatusEnum.Cancelled &&
+                                     Date.AddHours(-4) > DateTime.Now;
+
     public EventDetailViewModel()
     {
+        CancelEventCommand = new Command(CancelEvent, CanCancelEvent);
+        
         Id = Guid.Parse("EE272F8B-6096-4CB6-8625-BB4BB2D89E8B");
         Name = "John Egberts Live";
         Price = 65;

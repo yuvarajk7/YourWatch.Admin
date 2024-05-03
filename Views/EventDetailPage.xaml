@@ -116,6 +116,12 @@
                                      FallbackValue='No Category Provided' }" />
                         </Grid>
                     </Grid>
+                    <VerticalStackLayout Grid.Row="1">
+                        <Button Margin="0,10,0,0" 
+                                Text="Cancel Event" 
+                                Command="{Binding  CancelEventCommand}"
+                                IsVisible="{Binding IsEnabled, Source={RelativeSource Self}}"/>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
             </Grid>
         </ScrollView>

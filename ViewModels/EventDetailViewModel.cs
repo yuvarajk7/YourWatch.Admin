@@ -1,10 +1,12 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace YourWatch.Admin.Mobile.ViewModels;
 
-public class EventDetailViewModel : INotifyPropertyChanged
+public class EventDetailViewModel : ObservableObject
 {
     private Guid _id;
     private string _name = default!;
@@ -20,43 +22,25 @@ public class EventDetailViewModel : INotifyPropertyChanged
     public Guid Id
     {
         get => _id;
-        set => SetField(ref _id, value);
-        // if (value.Equals(_id)) return;
-        // _id = value;
-        // OnPropertyChanged();
+        set => SetProperty(ref _id, value);
     }
 
     public string Name
     {
         get => _name;
-        set
-        {
-            if(value.Equals(_name)) return;
-            _name = value;
-            OnPropertyChanged();
-        }
+        set => SetProperty(ref _name, value);
     }
 
     public double Price
     {
         get => _price;
-        set
-        {
-            if (value.Equals(_price)) return;
-            _price = value;
-            OnPropertyChanged();
-        }
+        set => SetProperty(ref _price, value);
     }
 
     public string ImageUrl
     {
         get => _imageUrl;
-        set
-        {
-            if (value == _imageUrl) return;
-            _imageUrl = value;
-            OnPropertyChanged();
-        }
+        set => SetProperty(ref _imageUrl, value);
     }
 
     public EventStatusEnum EventStatus
@@ -64,8 +48,10 @@ public class EventDetailViewModel : INotifyPropertyChanged
         get => _eventStatus;
         set
         {
-            SetField(ref _eventStatus, value);
-            ((Command)CancelEventCommand).ChangeCanExecute();
+            if (SetProperty(ref _eventStatus, value))
+            {
+                CancelEventCommand.NotifyCanExecuteChanged();
+            }
         }
     }
 
@@ -74,42 +60,27 @@ public class EventDetailViewModel : INotifyPropertyChanged
         get => _date;
         set
         {
-            SetField(ref _date, value);
-            ((Command)CancelEventCommand).ChangeCanExecute();
+            SetProperty(ref _date, value);
+            CancelEventCommand.NotifyCanExecuteChanged();
         }
     }
 
     public string Description
     {
         get => _description;
-        set
-        {
-            if (value == _description) return;
-            _description = value;
-            OnPropertyChanged();
-        }
+        set => SetProperty(ref _description, value);
     }
 
     public List<string> Artists
     {
         get => _artists;
-        set
-        {
-            if (Equals(value, _artists)) return;
-            _artists = value;
-            OnPropertyChanged();
-        }
+        set => SetProperty(ref _artists, value);
     }
 
     public CategoryViewModel Category
     {
         get => _category;
-        set
-        {
-            if (Equals(value, _category)) return;
-            _category = value;
-            OnPropertyChanged();
-        }
+        set => SetProperty(ref _category, value);
     }
 
     public bool ShowLargerImage
@@ -117,14 +88,16 @@ public class EventDetailViewModel : INotifyPropertyChanged
         get => _showLargerImage;
         set
         {
-            SetField(ref _showLargerImage, value);
-            OnPropertyChanged(nameof(ShowThumbnailImage));
+            if ( SetProperty(ref _showLargerImage, value))
+            {
+                OnPropertyChanged(nameof(ShowThumbnailImage));
+            }
         }
     }
 
     public bool ShowThumbnailImage => !ShowLargerImage;
 
-    public ICommand CancelEventCommand
+    public IRelayCommand CancelEventCommand
     {
         get;
     }
@@ -136,7 +109,7 @@ public class EventDetailViewModel : INotifyPropertyChanged
 
     public EventDetailViewModel()
     {
-        CancelEventCommand = new Command(CancelEvent, CanCancelEvent);
+        CancelEventCommand = new RelayCommand(CancelEvent, CanCancelEvent);
         
         Id = Guid.Parse("EE272F8B-6096-4CB6-8625-BB4BB2D89E8B");
         Name = "John Egberts Live";
@@ -151,20 +124,5 @@ public class EventDetailViewModel : INotifyPropertyChanged
             Id = Guid.Parse("B0788D2F-8003-43C1-92A4-EDC76A7C5DDE"),
             Name = "Concert"
         };
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
-    {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-        field = value;
-        OnPropertyChanged(propertyName);
-        return true;
     }
 }

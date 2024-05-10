@@ -6,102 +6,44 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace YourWatch.Admin.Mobile.ViewModels;
 
-public class EventDetailViewModel : ObservableObject
+public partial class EventDetailViewModel : ObservableObject
 {
+    [ObservableProperty]
     private Guid _id;
+    
+    [ObservableProperty]
     private string _name = default!;
+    
+    [ObservableProperty]
     private double _price;
+    
+    [ObservableProperty]
     private string _imageUrl;
+    
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(CancelEventCommand))]
     private EventStatusEnum _eventStatus;
+    
+    [ObservableProperty]
     private DateTime _date = DateTime.Now;
+    
+    [ObservableProperty]
     private string _description;
+    
+    [ObservableProperty]
     private List<string> _artists = new();
+    
+    [ObservableProperty]
     private CategoryViewModel _category = new();
+    
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowThumbnailImage))]
     private bool _showLargerImage;
-
-    public Guid Id
-    {
-        get => _id;
-        set => SetProperty(ref _id, value);
-    }
-
-    public string Name
-    {
-        get => _name;
-        set => SetProperty(ref _name, value);
-    }
-
-    public double Price
-    {
-        get => _price;
-        set => SetProperty(ref _price, value);
-    }
-
-    public string ImageUrl
-    {
-        get => _imageUrl;
-        set => SetProperty(ref _imageUrl, value);
-    }
-
-    public EventStatusEnum EventStatus
-    {
-        get => _eventStatus;
-        set
-        {
-            if (SetProperty(ref _eventStatus, value))
-            {
-                CancelEventCommand.NotifyCanExecuteChanged();
-            }
-        }
-    }
-
-    public DateTime Date
-    {
-        get => _date;
-        set
-        {
-            SetProperty(ref _date, value);
-            CancelEventCommand.NotifyCanExecuteChanged();
-        }
-    }
-
-    public string Description
-    {
-        get => _description;
-        set => SetProperty(ref _description, value);
-    }
-
-    public List<string> Artists
-    {
-        get => _artists;
-        set => SetProperty(ref _artists, value);
-    }
-
-    public CategoryViewModel Category
-    {
-        get => _category;
-        set => SetProperty(ref _category, value);
-    }
-
-    public bool ShowLargerImage
-    {
-        get => _showLargerImage;
-        set
-        {
-            if ( SetProperty(ref _showLargerImage, value))
-            {
-                OnPropertyChanged(nameof(ShowThumbnailImage));
-            }
-        }
-    }
 
     public bool ShowThumbnailImage => !ShowLargerImage;
 
-    public IRelayCommand CancelEventCommand
-    {
-        get;
-    }
-
+        
+    [RelayCommand(CanExecute = nameof(CanCancelEvent))]
     private void CancelEvent() => EventStatus = EventStatusEnum.Cancelled;
 
     private bool CanCancelEvent() => EventStatus != EventStatusEnum.Cancelled &&
@@ -109,7 +51,6 @@ public class EventDetailViewModel : ObservableObject
 
     public EventDetailViewModel()
     {
-        CancelEventCommand = new RelayCommand(CancelEvent, CanCancelEvent);
         
         Id = Guid.Parse("EE272F8B-6096-4CB6-8625-BB4BB2D89E8B");
         Name = "John Egberts Live";

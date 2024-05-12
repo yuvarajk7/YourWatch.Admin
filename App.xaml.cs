@@ -8,6 +8,6 @@ public partial class App : Application
     {
         InitializeComponent();
 
-        MainPage = new EventDetailPage();
+        MainPage = new EventOverviewPage();         
     }
 }

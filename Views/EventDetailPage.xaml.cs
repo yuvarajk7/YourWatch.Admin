@@ -9,9 +9,9 @@ namespace YourWatch.Admin.Mobile.Views;
 
 public partial class EventDetailPage : ContentPage
 {
-    public EventDetailPage()
+    public EventDetailPage(EventDetailViewModel vm)
     {
         InitializeComponent();
-        BindingContext = new EventDetailViewModel();
+        BindingContext = vm;
     }
 }

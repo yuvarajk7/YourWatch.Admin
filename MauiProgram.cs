@@ -53,6 +53,7 @@ public static class MauiProgram
     private static MauiAppBuilder RegisterServices(this MauiAppBuilder builder)
     {
         builder.Services.AddTransient<IEventService, EventService>();
+        builder.Services.AddSingleton<INavigationService, NavigationService>();
 
         return builder;
     }

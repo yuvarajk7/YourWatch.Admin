@@ -5,12 +5,15 @@ using System.Windows.Input;
 using CommunityToolkit.Maui.Core.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using YourWatch.Admin.Mobile.Messages;
 using YourWatch.Admin.Mobile.Models;
 using YourWatch.Admin.Mobile.Services;
+using YourWatch.Admin.Mobile.ViewModels.Base;
 
 namespace YourWatch.Admin.Mobile.ViewModels;
 
-public partial class EventDetailViewModel : ObservableObject
+public partial class EventDetailViewModel : ViewModelBase, IQueryAttributable
 {
     private readonly IEventService _eventService;
 
@@ -31,6 +34,7 @@ public partial class EventDetailViewModel : ObservableObject
     private EventStatusEnum _eventStatus;
     
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(CancelEventCommand))]
     private DateTime _date = DateTime.Now;
     
     [ObservableProperty]
@@ -48,27 +52,46 @@ public partial class EventDetailViewModel : ObservableObject
 
     public bool ShowThumbnailImage => !ShowLargerImage;
 
-        
-    [RelayCommand(CanExecute = nameof(CanCancelEvent))]
-    private void CancelEvent() => EventStatus = EventStatusEnum.Cancelled;
 
-    private bool CanCancelEvent() => EventStatus != EventStatusEnum.Cancelled &&
-                                     Date.AddHours(-4) > DateTime.Now;
+    [RelayCommand(CanExecute = nameof(CanCancelEvent))]
+    private async Task CancelEvent()
+    {
+        if (await _eventService.UpdateStatus(Id, EventStatusModel.Cancelled))
+        {
+            EventStatus = EventStatusEnum.Cancelled;
+            WeakReferenceMessenger.Default.Send(new StatusChangedMessage(Id, EventStatus));
+        }
+    }
+
+    private bool CanCancelEvent() => EventStatus != EventStatusEnum.Cancelled &&  Date.AddHours(-4) > DateTime.Now;
 
     public EventDetailViewModel(IEventService eventService)
     {
-        
         _eventService = eventService;
-
-        Id = Guid.Parse("{EE272F8B-6096-4CB6-8625-BB4BB2D89E8B}");
-        GetEvent(Id);
     }
-    
-    private async void GetEvent(Guid id)
+
+    public override async Task LoadAsync()
     {
+        await Loading(
+            async () =>
+            {
+                if (Id != Guid.Empty)
+                {
+                    await GetEvent(Id);
+                }
+            });
+    }
+
+    private async Task GetEvent(Guid id)
+    {
+        await Task.Delay(1000);
+        
         var @event = await _eventService.GetEvent(id);
 
-        MapEventData(@event);
+        if (@event != null)
+        {
+            MapEventData(@event);
+        } 
     }
 
     private void MapEventData(EventModel @event)
@@ -86,5 +109,14 @@ public partial class EventDetailViewModel : ObservableObject
             Id = @event.Category.Id,
             Name = @event.Category.Name
         };
+    }
+
+    public async void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        var eventId = query["EventId"].ToString();
+        if (Guid.TryParse(eventId, out var selectedId))
+        {
+            Id = selectedId;
+        }
     }
 }

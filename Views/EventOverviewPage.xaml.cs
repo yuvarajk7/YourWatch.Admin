@@ -7,11 +7,11 @@ using YourWatch.Admin.Mobile.ViewModels;
 
 namespace YourWatch.Admin.Mobile.Views;
 
-public partial class EventOverviewPage : ContentPage
+public partial class EventOverviewPage : ContentPageBase
 {
     public EventOverviewPage(EventListOverviewViewModel vm)
     {
         InitializeComponent();
-        BindingContext = vm;
+        BindingContext = vm;    
     }
 }

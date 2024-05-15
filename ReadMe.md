@@ -48,3 +48,16 @@
     </domain-config>
 </network-security-config>
 ```
+
+## Version 8
+- Added Navigation Service and implement Shell.GotoAsync(state, params)
+- AppShell.xaml implement ShellContent and navigate to EventOverviewPage
+- Register the INotification service in MauiProgram.cs
+- Created IViewModelBase and inherited to other view model classes
+- Added ActicityIndicator UI component on the view page
+- Created ContentPageBase class and inherited to View Class as well as XAML page
+- Change the <ContentPage> to <views:ContentPageBase>
+- Update the view model inherited from ViewModelBase to enable and disable activity indicator on load of the page
+- Inherit IQueryAttributable to capture parameter while navigating the view 
+- Implement ApplyQueryAttributes to capture and validate parameters
+- Communicate between view models using WeakReferenceManager implemented in IRecipient<> belongs to community MVVM

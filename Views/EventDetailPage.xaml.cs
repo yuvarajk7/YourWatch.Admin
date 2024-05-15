@@ -7,7 +7,7 @@ using YourWatch.Admin.Mobile.ViewModels;
 
 namespace YourWatch.Admin.Mobile.Views;
 
-public partial class EventDetailPage : ContentPage
+public partial class EventDetailPage: ContentPageBase
 {
     public EventDetailPage(EventDetailViewModel vm)
     {

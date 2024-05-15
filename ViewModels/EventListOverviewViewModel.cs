@@ -1,36 +1,49 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Maui.Core.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using YourWatch.Admin.Mobile.Models;
 using YourWatch.Admin.Mobile.Services;
+using YourWatch.Admin.Mobile.ViewModels.Base;
 
 namespace YourWatch.Admin.Mobile.ViewModels;
 
-public partial class EventListOverviewViewModel : ObservableObject
+public partial class EventListOverviewViewModel(IEventService eventService, INavigationService navigationService)
+    : ViewModelBase
 {
-    private readonly IEventService _eventService;
-
     [ObservableProperty]
     private ObservableCollection<EventListItemViewModel> _events = new();
 
     [ObservableProperty]
     private EventListItemViewModel? _selectedEvent;
 
-    public EventListOverviewViewModel(IEventService eventService)
+    [RelayCommand]
+    private async Task NavigateToSelectedDetail()
     {
-        _eventService = eventService;
-        GetEvents();
+        if (SelectedEvent is not null)
+        {
+            await navigationService.GoToEventDetail(SelectedEvent.Id);
+            SelectedEvent = null;
+        }
+    }
+
+    public override async Task LoadAsync()
+    {
+        if (Events.Count == 0)
+        {
+            await Loading(GetEvents);
+        }
     }
     
-    private async void GetEvents()
+    private async Task GetEvents()
     {
-        List<EventModel> events = await _eventService.GetEvents();
+        //await Task.Delay(5000);
+        List<EventModel> events = await eventService.GetEvents();
         List<EventListItemViewModel> listItems = new();
         foreach (var @event in events)
         {
             listItems.Add(MapEventModelToEventListItemViewModel(@event));
         }
-
         Events.Clear();
         Events = listItems.ToObservableCollection();
     }

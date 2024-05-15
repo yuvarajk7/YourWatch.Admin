@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<views:ContentPageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="YourWatch.Admin.Mobile.Views.EventOverviewPage"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:converters="clr-namespace:YourWatch.Admin.Mobile.Converters"
+             xmlns:views="clr-namespace:YourWatch.Admin.Mobile.Views"
              Title="EventOverviewPage">
     <ContentPage.Resources>
         <toolkit:ListToStringConverter x:Key="ListToStringConverter" Separator=", "/>
@@ -33,7 +34,8 @@
                 <StackLayout>
                     <CollectionView ItemsSource="{Binding Events}"
                                     SelectedItem="{Binding SelectedEvent, Mode=TwoWay}"
-                                    SelectionMode="Single">
+                                    SelectionMode="Single"
+                                    SelectionChangedCommand="{Binding NavigateToSelectedDetailCommand}">
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
                                 <Grid Padding="10"
@@ -57,7 +59,7 @@
                                         <Label Text="{Binding Category.Name}" />
                                         <Label 
                                             FontAttributes="Italic"
-                                            Text="{Binding Status, 
+                                            Text="{Binding EventStatus, 
                                             Converter={StaticResource StatusEnumToTextConverter}}"
                                             TextColor="{StaticResource Primary}" />
                                     </VerticalStackLayout>
@@ -68,5 +70,9 @@
                 </StackLayout>
             </Grid>
         </ScrollView>
+        <Grid  BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" 
+               IsVisible="{Binding IsLoading}">
+            <ActivityIndicator IsRunning="{Binding IsLoading}" />
+        </Grid>
     </Grid>
-</ContentPage>
+</views:ContentPageBase>

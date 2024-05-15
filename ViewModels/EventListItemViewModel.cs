@@ -1,8 +1,10 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
+using YourWatch.Admin.Mobile.Messages;
 
 namespace YourWatch.Admin.Mobile.ViewModels;
 
-public partial class EventListItemViewModel : ObservableObject
+public partial class EventListItemViewModel : ObservableObject, IRecipient<StatusChangedMessage>
 {
     [ObservableProperty]
     private Guid _id;
@@ -47,5 +49,15 @@ public partial class EventListItemViewModel : ObservableObject
         Artists = artists;
         EventStatus = status;
         Category = category;
+        
+        WeakReferenceMessenger.Default.Register(this);
+    }
+
+    public void Receive(StatusChangedMessage message)
+    {
+        if (message.EventId == Id)
+        {
+            EventStatus = message.Status;
+        }
     }
 }

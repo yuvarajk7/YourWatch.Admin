@@ -16,6 +16,8 @@ namespace YourWatch.Admin.Mobile.ViewModels;
 public partial class EventDetailViewModel : ViewModelBase, IQueryAttributable
 {
     private readonly IEventService _eventService;
+    private readonly INavigationService _navigationService;
+    private readonly IDialogService _dialogService;
 
     [ObservableProperty]
     private Guid _id;
@@ -60,14 +62,38 @@ public partial class EventDetailViewModel : ViewModelBase, IQueryAttributable
         {
             EventStatus = EventStatusEnum.Cancelled;
             WeakReferenceMessenger.Default.Send(new StatusChangedMessage(Id, EventStatus));
-        }
+        }   
     }
 
     private bool CanCancelEvent() => EventStatus != EventStatusEnum.Cancelled &&  Date.AddHours(-4) > DateTime.Now;
 
-    public EventDetailViewModel(IEventService eventService)
+    [RelayCommand]
+    private async Task NavigateToEditEvent()
+    {
+        var detailModel = MapToEventModel(this);
+        await _navigationService.GoToEditEvent(detailModel);
+    }
+    
+    [RelayCommand]
+    private async Task DeleteEvent()
+    {
+        if (await _dialogService.Ask(
+                "Delete event",
+                "Are you sure you want to delete this event?"))
+        {
+            if (await _eventService.DeleteEvent(Id))
+            {
+                WeakReferenceMessenger.Default.Send(new EventDeletedMessage(Id));
+                await _navigationService.GoToOverview();
+            }
+        }
+    }
+    public EventDetailViewModel(IEventService eventService, INavigationService navigationService,
+                IDialogService dialogService)
     {
         _eventService = eventService;
+        _navigationService = navigationService;
+        _dialogService = dialogService;
     }
 
     public override async Task LoadAsync()
@@ -108,6 +134,26 @@ public partial class EventDetailViewModel : ViewModelBase, IQueryAttributable
         {
             Id = @event.Category.Id,
             Name = @event.Category.Name
+        };
+    }
+    
+    private EventModel MapToEventModel(EventDetailViewModel eventDetailViewModel)
+    {
+        return new EventModel
+        {
+            Id = eventDetailViewModel.Id,
+            Name = eventDetailViewModel.Name ?? string.Empty,
+            Price = eventDetailViewModel.Price,
+            ImageUrl = eventDetailViewModel.ImageUrl,
+            Status = (EventStatusModel)eventDetailViewModel.EventStatus,
+            Date = eventDetailViewModel.Date,
+            Description = eventDetailViewModel.Description ?? string.Empty,
+            Category = new CategoryModel
+            {
+                Id = eventDetailViewModel.Category!.Id,
+                Name = eventDetailViewModel.Category.Name
+            },
+            Artists = eventDetailViewModel.Artists.ToList()
         };
     }
 

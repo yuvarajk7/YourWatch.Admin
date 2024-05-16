@@ -17,6 +17,7 @@ public static class MauiProgram
             .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts =>
             {
+                fonts.AddFont("MaterialIcons-Regular.ttf", "MaterialIconsRegular");
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             })
@@ -47,6 +48,7 @@ public static class MauiProgram
             });
 
         builder.Services.AddTransient<IEventRepository, EventRepository>();
+        builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
         return builder;
     }
     
@@ -54,6 +56,8 @@ public static class MauiProgram
     {
         builder.Services.AddTransient<IEventService, EventService>();
         builder.Services.AddSingleton<INavigationService, NavigationService>();
+        builder.Services.AddTransient<ICategoryService, CategoryService>();
+        builder.Services.AddSingleton<IDialogService, DialogService>();
 
         return builder;
     }
@@ -61,16 +65,17 @@ public static class MauiProgram
     private static MauiAppBuilder RegisterViewModels(this MauiAppBuilder builder)
     {
         builder.Services.AddSingleton<EventListOverviewViewModel>();
-
         builder.Services.AddTransient<EventDetailViewModel>();
+        builder.Services.AddTransient<EventAddEditViewModel>();
+        
         return builder;
     }
     
     private static MauiAppBuilder RegisterViews(this MauiAppBuilder builder)
     {
         builder.Services.AddSingleton<EventOverviewPage>();
-
         builder.Services.AddTransient<EventDetailPage>();
+        builder.Services.AddTransient<EventAddEditPage>();
         return builder;
     }
 }

@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace YourWatch.Admin.Mobile.ViewModels.Base;
 
-public partial class ViewModelBase : ObservableObject, IViewModelBase
+public partial class ViewModelBase : ObservableValidator, IViewModelBase
 {
     [ObservableProperty] 
     private bool _isLoading;

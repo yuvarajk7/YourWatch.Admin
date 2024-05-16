@@ -61,3 +61,43 @@
 - Inherit IQueryAttributable to capture parameter while navigating the view 
 - Implement ApplyQueryAttributes to capture and validate parameters
 - Communicate between view models using WeakReferenceManager implemented in IRecipient<> belongs to community MVVM
+
+## Version 9
+- Added POCO messages EventAddedOrChangedMessage and EventDeletedMessage helps to add or delete an event
+- Added repositories CategoryRepository, Added method Insert, update and delete events in EventRepository
+- Added resources MaterialIcons font and globalticket_logo image
+- Added CategoryService, DialogService
+- Added methods in NavigationService and EventService
+- Created ViewModelBase support loading activity indicator
+- Created CategoryViewModel, EventAddEditViewModel
+- Created EventAddEditPage and LogoView views
+- Register Repositories, services, views in MauiProgram.cs
+- Added logo banner (LogoView) component in AppShell XAML <Shell.TitleView>
+```
+<Shell.TitleView>
+    <views:LogoView/>
+</Shell.TitleView>
+```
+- Register Event Add and update route in AppShell.cs 
+```
+Routing.RegisterRoute("event/add", typeof(EventAddEditPage));
+Routing.RegisterRoute("event/edit", typeof(EventAddEditPage));
+```
+- Added ActivityIndicator in EventOverviewPage and EventDetailPage
+```
+<ActivityIndicator IsRunning="{Binding IsLoading}" />
+```
+- Added DeleteEvent button and implemented command DeleteEventCommand
+- Added CancelEvent button and implemented command CancelEventCommand
+- Implemented Add and Update event in EventAddEditViewModel
+- Implemented validation rules using ObservableValidator which has many built in features 
+  - data annotations attributes
+  - INotifyDataErrorInfo
+  - ValidateProperty
+  - ValidateAllProperties
+  - ClearAllErrors
+  - GetErrors
+- Display Alert
+```
+Shell.Current.DisplayAlert(title, message, acceptText, cancelText)
+```

@@ -101,3 +101,14 @@ Routing.RegisterRoute("event/edit", typeof(EventAddEditPage));
 ```
 Shell.Current.DisplayAlert(title, message, acceptText, cancelText)
 ```
+## Version 10
+- Choose xUnit project
+- Add a new project YourWatch.Admin.Mobile.Tests
+- Install package NSubstitute
+- Add project reference YourWatch.Admin.Mobile
+- Edit YourWatch.Admin.Mobile.csproj and add "net8.0" in TargetFrameworks
+- Update OutputType
+```
+<OutputType Condition="'$(TargetFramework)' != 'net8.0'">Exe</OutputType>
+```
+- 

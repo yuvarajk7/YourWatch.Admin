@@ -13,4 +13,13 @@ public class EventService(IEventRepository eventRepository) : IEventService
 
     public Task<bool> UpdateStatus(Guid id, EventStatusModel status)
         => eventRepository.UpdateStatus(id, status);
+    
+    public Task<bool> CreateEvent(EventModel model)
+        => eventRepository.CreateEvent(model);
+
+    public Task<bool> EditEvent(EventModel model)
+        => eventRepository.EditEvent(model);
+
+    public Task<bool> DeleteEvent(Guid id)
+        => eventRepository.DeleteEvent(id);
 }

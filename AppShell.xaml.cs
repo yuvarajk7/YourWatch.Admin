@@ -8,5 +8,7 @@ public partial class AppShell : Shell
     {
         InitializeComponent();
         Routing.RegisterRoute("event", typeof(EventDetailPage));
+        Routing.RegisterRoute("event/add", typeof(EventAddEditPage));
+        Routing.RegisterRoute("event/edit", typeof(EventAddEditPage));
     }
 }

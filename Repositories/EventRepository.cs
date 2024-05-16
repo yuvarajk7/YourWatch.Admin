@@ -63,4 +63,67 @@ public class EventRepository(IHttpClientFactory httpClientFactory) : IEventRepos
 
         return false;
     }
+    
+    public async Task<bool> CreateEvent(EventModel model)
+    {
+        using HttpClient client = httpClientFactory.CreateClient("GloboTicketAdminApiClient");
+
+        try
+        {
+            var content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
+            var response = await client.PostAsync($"events", content);
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+
+        return false;
+    }
+
+    public async Task<bool> EditEvent(EventModel model)
+    {
+        using HttpClient client = httpClientFactory.CreateClient("GloboTicketAdminApiClient");
+
+        try
+        {
+            var content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
+            var response = await client.PutAsync($"events/{model.Id}", content);
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+
+        return false;
+    }
+
+    public async Task<bool> DeleteEvent(Guid id)
+    {
+        using HttpClient client = httpClientFactory.CreateClient("GloboTicketAdminApiClient");
+
+        try
+        {
+            var response = await client.DeleteAsync($"events/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+
+        return false;
+    }
+    
 }
